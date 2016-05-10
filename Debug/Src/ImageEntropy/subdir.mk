@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../Src/ImageEntropy/EntropyOfEntropyArea.cpp \
 ../Src/ImageEntropy/ImageResize.cpp 
 
 OBJS += \
+./Src/ImageEntropy/EntropyOfEntropyArea.o \
 ./Src/ImageEntropy/ImageResize.o 
 
 CPP_DEPS += \
+./Src/ImageEntropy/EntropyOfEntropyArea.d \
 ./Src/ImageEntropy/ImageResize.d 
 
 

@@ -46,6 +46,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.2145701452" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="opencv_core"/>
+									<listOptionValue builtIn="false" value="opencv_imgproc"/>
 									<listOptionValue builtIn="false" value="opencv_highgui"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.13647526" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
