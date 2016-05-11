@@ -4,23 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../Src/ImageEntropy/EntropyOfEntropyArea.cpp \
-../Src/ImageEntropy/ImageCombine.cpp \
-../Src/ImageEntropy/ImageResize.cpp 
+../Src/ThreadControl/SystemFlag.cpp \
+../Src/ThreadControl/SystemInit.cpp 
 
 OBJS += \
-./Src/ImageEntropy/EntropyOfEntropyArea.o \
-./Src/ImageEntropy/ImageCombine.o \
-./Src/ImageEntropy/ImageResize.o 
+./Src/ThreadControl/SystemFlag.o \
+./Src/ThreadControl/SystemInit.o 
 
 CPP_DEPS += \
-./Src/ImageEntropy/EntropyOfEntropyArea.d \
-./Src/ImageEntropy/ImageCombine.d \
-./Src/ImageEntropy/ImageResize.d 
+./Src/ThreadControl/SystemFlag.d \
+./Src/ThreadControl/SystemInit.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-Src/ImageEntropy/%.o: ../Src/ImageEntropy/%.cpp
+Src/ThreadControl/%.o: ../Src/ThreadControl/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -std=c++0x -I/usr/include -I/usr/include/opencv -I/usr/include/opencv2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"

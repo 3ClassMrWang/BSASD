@@ -8,6 +8,78 @@
 // Time		   : 2016.5.9
 //============================================================================
 
+
+
+//unitTest3 图像整合
+/*
+#include <iostream>
+#include <opencv.hpp>
+#include "ImageEntropy/ImageCombine.h"
+
+int main(){
+	cv::Mat frame = cv::imread("Image/frame.bmp");
+	cv::Mat bg = cv::imread("Image/bg.bmp");
+	cv::Mat fg = cv::imread("Image/fg.bmp");
+
+	cv::cvtColor(fg,fg,CV_BGR2GRAY);
+
+	cv::namedWindow("before_frame",CV_WINDOW_FREERATIO);
+	cv::imshow("before_frame",frame);
+
+	ImageCombine ic(frame, bg, fg);
+	ic.process();
+
+	cv::namedWindow("after_frame",CV_WINDOW_FREERATIO);
+	cv::imshow("after_frame",frame);
+
+	cv::waitKey();
+}
+*/
+
+//unitTest2 系统标志位
+/*
+#include <iostream>
+#include <thread>
+#include "ThreadControl/SystemFlag.h"
+#include <unistd.h>
+
+using namespace std;
+SystemFlag systemFlag;
+
+
+void changeSystemStatus(){
+	std::cout << "hello" << std::endl;
+	usleep(1000);
+	systemFlag.setSystemStatus(ENTROPY_CHANGE);
+}
+
+void printSystemStatus(){
+	std::cout << "hello2" << std::endl;
+	while(true){
+		if(systemFlag.getSystemStatus() != UNKNOWN){
+			std::cout << "SystemStatus :" << systemFlag.getSystemStatus() << std::endl;
+			break;
+		}
+	}
+}
+
+int main(){
+
+	std::thread t2(printSystemStatus);
+	std::thread t1(changeSystemStatus);
+
+	t2.join();
+	t1.join();
+
+	return 0;
+
+}
+*/
+
+
+
+//unitTest1 熵值更新
+/*
 #include <iostream>
 #include "ImageEntropy/ImageResize.h"
 #include <opencv.hpp>
@@ -38,3 +110,4 @@ int main() {
 	cv::imshow("ImageResize",image);
 	cv::waitKey();
 }
+*/
