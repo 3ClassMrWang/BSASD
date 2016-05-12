@@ -14,14 +14,12 @@
 
 class ImageResize {
 public:
-	explicit ImageResize(cv::Mat& image);
+	explicit ImageResize();
 	virtual ~ImageResize();
 
-	void process();
+	void process(cv::Mat& image_);
 
 private:
-	cv::Mat& image;
-
 	//熵区域大小 -> 一个熵区域由多少像素组成
 	int entropyAreaSize;
 	//监控区域大小 -> 一个监控区域有多少熵区域组成

@@ -6,9 +6,17 @@
  */
 
 #include "ImageCombine.h"
+#include <iostream>
 
-ImageCombine::ImageCombine(cv::Mat& frame_, cv::Mat& background_, cv::Mat& foremask_):
-frame(frame_), background(background_), foremask(foremask_) {
+ImageCombine::ImageCombine(){
+	std::cout << "ImageCombine()" << std::endl;
+}
+
+ImageCombine::~ImageCombine() {
+	std::cout << "~ImageCombine()" << std::endl;
+}
+
+void ImageCombine::process(cv::Mat& frame, cv::Mat& background, cv::Mat& foremask){
 
 	assert(frame.size() == background.size());
 	assert(frame.size() == foremask.size());
@@ -17,13 +25,6 @@ frame(frame_), background(background_), foremask(foremask_) {
 	assert(!frame.empty());
 	assert(!background.empty());
 	assert(!foremask.empty());
-
-}
-
-ImageCombine::~ImageCombine() {
-}
-
-void ImageCombine::process(){
 
 	int nl = frame.rows;	//行数
 	int nc = frame.cols * frame.channels();	//frame和background一行的元素个数，注意foremask为二指图像，其行指针为frame的1/3

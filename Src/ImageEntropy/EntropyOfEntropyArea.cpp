@@ -8,7 +8,7 @@
 #include "EntropyOfEntropyArea.h"
 
 EntropyOfEntropyArea::EntropyOfEntropyArea(cv::Mat& image_):
-image(image_),entropyAreaSize(3),monitorAreaSize(3),windowWidth(5),grayLevel(6),C0(0.05),learningRate(0.7),entropyImage(image_.size(),CV_8U),firstTime(true){
+image(image_),entropyAreaSize(3),monitorAreaSize(3),windowWidth(5),grayLevel(6),C0(0.05),learningRate(0.7),entropyImage(image_.size(),CV_8U),firstTime(true),deltaENToOldENRatioEntropy(0.1),staticRatioEntropy(0.7){
 	std::cout << "EntropyOfEntropyArea()" <<std::endl;
 
 	loadConfig();
@@ -73,6 +73,8 @@ void EntropyOfEntropyArea::saveConfig(){
 	cvWriteInt(fs, "grayLevel", grayLevel);
 	cvWriteReal(fs, "C0",C0);
 	cvWriteReal(fs, "learningRate", learningRate);
+	cvWriteReal(fs, "deltaENToOldENRatioEntropy", deltaENToOldENRatioEntropy);
+	cvWriteReal(fs, "staticRatioEntropy", staticRatioEntropy);
 
 	cvReleaseFileStorage(&fs);
 
@@ -89,6 +91,8 @@ void EntropyOfEntropyArea::loadConfig(){
 	grayLevel = cvReadIntByName(fs2, 0, "grayLevel", 6);
 	C0 = cvReadRealByName(fs2, 0, "C0", 0.05);
 	learningRate = cvReadRealByName(fs2, 0, "learningRate", 0.7);
+	deltaENToOldENRatioEntropy = cvReadRealByName(fs2, 0, "deltaENToOldENRatioEntropy", 0.1);
+	staticRatioEntropy = cvReadRealByName(fs2, 0, "staticRatioEntropy", 0.7);
 
 	cvReleaseFileStorage(&fs1);
 	cvReleaseFileStorage(&fs2);
@@ -102,7 +106,7 @@ void EntropyOfEntropyArea::updateAllEntropyOfEntropyArea(cv::Mat& image_){
 	oldEN = EN;
 
 	//首先，把图像转换为色域
-	cv::cvtColor(image, image, CV_BGR2Lab);
+	cv::cvtColor(image, image, CV_BGR2HSV_FULL);
 
 	//更新时用随机抽样法淘汰原来的样本
 	/**
@@ -147,14 +151,14 @@ void EntropyOfEntropyArea::updateAllEntropyOfEntropyArea(cv::Mat& image_){
 		for(int j = 0; j < g; j++){
 			tempEN += PHi[H_S[i][j]];
 		}
-//		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
-		EN[i] += tempEN;
+		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
+//		EN[i] += tempEN;
 		for(int j = 0; j < g; j++){
 			tempEN += PHi[H_V[i][j]];
 		}
-//		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
-		EN[i] += tempEN;
-		EN[i] /= 3;
+		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
+//		EN[i] += tempEN;
+//		EN[i] /= 3;
 
 		//更新本次熵值相对于上一次熵值的变化量
 		/**
@@ -163,9 +167,10 @@ void EntropyOfEntropyArea::updateAllEntropyOfEntropyArea(cv::Mat& image_){
 		 * deltaEN(t) = (1-r)*deltaEN(t-1) + r*deltaEN(t) ,if t>0
 		 * 为了防止由于采样引起的误差，所以采用无限冲激响应滤波器更新deltaEN
 		 */
-		deltaEN[i] = (1 - learningRate) * deltaEN[i] + learningRate * (EN[i] - oldEN[i]);
+		deltaEN[i] = (1 - learningRate) * deltaEN[i] + learningRate * abs(EN[i] - oldEN[i]);
 	}
 
+	firstTime  = false;
 }
 
 void EntropyOfEntropyArea::updateAllEntropyOfMonitorArea(cv::Mat& image_){
@@ -175,7 +180,7 @@ void EntropyOfEntropyArea::updateAllEntropyOfMonitorArea(cv::Mat& image_){
 	oldEN = EN;
 
 	//图像转换色域空间
-	cv::cvtColor(image,image,CV_BGR2Lab);
+	cv::cvtColor(image,image,CV_BGR2HSV_FULL);
 
 	//使用随机淘汰法淘汰样本
 	deleteMonitorAreaSample();
@@ -241,18 +246,19 @@ void EntropyOfEntropyArea::updateAllEntropyOfMonitorArea(cv::Mat& image_){
 		for(int j = 0; j < g; j++){
 			tempEN += PHi[H_S[i][j]];
 		}
-//		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
-		EN[i] += tempEN;
+		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
+//		EN[i] += tempEN;
 		for(int j = 0; j < g; j++){
 			tempEN += PHi[H_V[i][j]];
 		}
-//		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
-		EN[i] += tempEN;
-		EN[i] /= 3;
+		EN[i] = (EN[i] >= tempEN) ? EN[i] : tempEN;
+//		EN[i] += tempEN;
+//		EN[i] /= 3;
 
-		deltaEN[i] = (1 - learningRate) * deltaEN[i] + learningRate * (EN[i] - oldEN[i]);
+		deltaEN[i] = (1 - learningRate) * deltaEN[i] + learningRate * abs(EN[i] - oldEN[i]);
 	}
 
+	firstTime  = false;
 }
 
 void EntropyOfEntropyArea::deleteEntropyAreaSample(){
@@ -359,4 +365,29 @@ cv::Mat EntropyOfEntropyArea::getEntropyImage(){
 	}
 
 	return entropyImage;
+}
+
+/**
+ * 这里我们需要找一个指标来衡量，到底deltaEN变化到什么程度可以认为背景图像已经稳定了
+ * 目前的初步策略是：相对于oldEN的deltaEN小于阈值，并且总的变化个数占所有熵值像素的比例小于阈值，这两个
+ * 条件满足时，则可以认为背景图像已经稳定了
+ */
+bool EntropyOfEntropyArea::checkDeltaENToDecideIsStatic(){
+	int number = 0;
+	double ratio1 = 0;
+	for(int i = 0; i < (image.cols * image.rows)/(entropyAreaSize * entropyAreaSize); i++){
+		ratio1 += deltaEN[i]/oldEN[i];
+		if(deltaEN[i]/oldEN[i] < deltaENToOldENRatioEntropy){
+			number++;
+		}
+	}
+	double ratio2 = number*1.0/((image.cols * image.rows)/(entropyAreaSize * entropyAreaSize));
+	std::cout << "deltaENToOldENRatioEntropy :" << ratio1/(image.cols * image.rows)/(entropyAreaSize * entropyAreaSize) << std::endl;
+	std::cout << "staticRatioEntropy :" << ratio2 << std::endl;
+	std::cout << "number :" << number << std::endl;
+	if(number*1.0/((image.cols * image.rows)/(entropyAreaSize * entropyAreaSize)) > staticRatioEntropy){
+		return true;
+	}
+
+	return false;
 }

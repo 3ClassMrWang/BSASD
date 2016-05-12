@@ -7,8 +7,8 @@
 
 #include "ImageResize.h"
 
-ImageResize::ImageResize(cv::Mat& image_):
-image(image_),entropyAreaSize(3),monitorAreaSize(3),firstTime(true) {
+ImageResize::ImageResize():
+entropyAreaSize(3),monitorAreaSize(3),firstTime(true) {
 	std::cout << "ImageResize()" << std::endl;
 }
 
@@ -16,7 +16,7 @@ ImageResize::~ImageResize() {
 	std::cout << "~ImageResize()" << std::endl;
 }
 
-void ImageResize::process(){
+void ImageResize::process(cv::Mat& image){
 	assert(!image.empty());
 
 	loadConfig();

@@ -4,4 +4,6 @@
 <grayLevel>6</grayLevel>
 <C0>5.0000000000000003e-02</C0>
 <learningRate>6.9999999999999996e-01</learningRate>
+<deltaENToOldENRatioEntropy>5.0000000000000001e-03</deltaENToOldENRatioEntropy>
+<staticRatioEntropy>9.0000000000000002e-01</staticRatioEntropy>
 </opencv_storage>

@@ -15,16 +15,10 @@
 
 class ImageCombine {
 public:
-	ImageCombine(cv::Mat& frame_, cv::Mat& background_, cv::Mat& foremask_);
+	ImageCombine();
 	virtual ~ImageCombine();
 
-	void process();
-
-private:
-	cv::Mat& frame;
-	cv::Mat& background;
-	cv::Mat& foremask;
-
+	void process(cv::Mat& frame, cv::Mat& background, cv::Mat& foremask);
 };
 
 #endif /* IMAGEENTROPY_IMAGECOMBINE_H_ */

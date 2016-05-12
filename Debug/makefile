@@ -8,8 +8,10 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Src/VideoStream/subdir.mk
 -include Src/ThreadControl/subdir.mk
 -include Src/ImageEntropy/subdir.mk
+-include Src/BackgroundSubtraction/Pbas/subdir.mk
 -include Src/subdir.mk
 -include subdir.mk
 -include objects.mk

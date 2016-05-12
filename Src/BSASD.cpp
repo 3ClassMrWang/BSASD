@@ -9,6 +9,71 @@
 //============================================================================
 
 
+//unitTest5 SystemInit 系统再FIRST_TIME情况下执行情况
+#include "ThreadControl/SystemInit.h"
+#include "ThreadControl/SystemFlag.h"
+#include "VideoStream/ReadVideo.h"
+#include <thread>
+#include <atomic>
+
+int main(int argc, char** argv){
+	ReadVideo rv;
+	cv::VideoCapture capture = rv.process(argc,argv);
+	if(!capture.isOpened())
+		return -1;
+	cv::Mat entropyImage;
+	cv::Mat frame;
+	//设定系统状态，初始化为UNKNOWN
+	SystemFlag SF;
+	if(capture.read(frame)){
+		ImageResize IR;
+		IR.process(frame);
+		//初始化EOEA
+		EntropyOfEntropyArea EOEA(frame);
+		SF.setSystemStatus(FIRST_TIME);
+		SystemInit SI(EOEA, SF, capture, entropyImage);
+		SI.process();
+
+	}else{
+		std::cout << "图像读取失败！" << std::endl;
+		return -1;
+	}
+
+	cv::imshow("entropyImage", entropyImage);
+	cv::waitKey();
+	std::cout << "SystemFlag :" << SF.getSystemStatus() << std::endl;
+}
+
+void startSystemInit(){
+
+}
+
+
+//unitTest4 readVideo
+
+/*
+#include <iostream>
+#include <opencv.hpp>
+#include "VideoStream/ReadVideo.h"
+
+int main(int argc, char** argv){
+	ReadVideo rv;
+	cv::VideoCapture capture = rv.process(argc,argv);
+	if(!capture.isOpened())
+		return -1;
+	cv::Mat frame;
+	cv::namedWindow("video");
+	while(capture.read(frame)){
+		cv::imshow("video", frame);
+		cv::waitKey(1000);
+	}
+
+	cv::waitKey();
+}
+*/
+
+
+
 
 //unitTest3 图像整合
 /*

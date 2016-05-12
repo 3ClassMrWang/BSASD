@@ -26,8 +26,15 @@ public:
 
 	void setSystemStatus(const int& status);
 	int getSystemStatus();
+
 	void setIsEntropyImageSplitFlag(const bool& status);
 	bool getIsEntropyImageSplitFlag();
+
+	void setIsFrameReady(const bool& status);
+	bool getIsFrameReady();
+
+	void setIsBSInit(const bool& status);
+	bool getIsBSInit();
 
 private:
 	//系统状态变量，存在三种可能，FIRST_TIME ENTROPY_STATIC ENTROPY_CHANGE UNKNOWN
@@ -35,6 +42,12 @@ private:
 
 	//熵图片是否已经分割标志
 	std::atomic<bool> IS_ENTROPY_IMAGE_SPLIT_FLAG;
+
+	//图片读取准备就绪flag
+	std::atomic<bool> IS_FRAME_READY;
+
+	//图片背景减除初始化flag
+	std::atomic<bool> IS_BS_INIT;
 };
 
 #endif /* THREADCONTROL_SYSTEMFLAG_H_ */

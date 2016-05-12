@@ -28,6 +28,8 @@ public:
 	void updateAllEntropyOfMonitorArea(cv::Mat& image_);
 	//获取熵图像
 	cv::Mat getEntropyImage();
+	//检查熵区域
+	bool checkDeltaENToDecideIsStatic();
 
 private:
 
@@ -63,6 +65,10 @@ private:
 	void deleteMonitorAreaSample();
 
 	bool firstTime;
+	//deltaEN相对于原来的EN变化率
+	double deltaENToOldENRatioEntropy;
+	//deltaEnToOldENRatio小于阈值熵像素个数占所有熵像素个数的比例
+	double staticRatioEntropy;
 	void loadConfig();
 	void saveConfig();
 };
